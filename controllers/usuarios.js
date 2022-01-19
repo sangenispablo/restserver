@@ -1,23 +1,28 @@
 const { request, response } = require("express");
 
+const Usuario = require("../models/usuario");
+
 const usuariosGet = (req = request, res = response) => {
   // Si necesito parametros p/query es decir algo como esto
   // localhost:8080/api/usuarios?q=argentina&edad=23&apikey=123123123123123&nombre=pablo
-  const { q, edad, apikey, nombre="sin nombre" } = req.query;
+  const { q, edad, apikey, nombre = "sin nombre" } = req.query;
   console.log(q, edad, apikey, nombre);
   res.json({
     msg: "get API Usuarios",
   });
 };
 
-const usuariosPost = (req = request, res = response) => {
+const usuariosPost = async (req = request, res = response) => {
   // Gracias al middleware express.json que procesa todo el body como un json
   // puedo desestructrar la data que viene en el body
-  const { nombre, edad } = req.body;
-  console.log(nombre, edad);
+  const body = req.body;
+  const usuario = new Usuario(body);
+
+  await usuario.save();
 
   res.json({
     msg: "post API Usuarios",
+    usuario,
   });
 };
 

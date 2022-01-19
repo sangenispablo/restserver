@@ -35,7 +35,7 @@ const usuariosPut = async (req = request, res = response) => {
   // le tengo que poner en el router "/:id" por ejemplo y luego en la funciona del controlador
   const { id } = req.params;
   // En la linea de abajo lo que estoy haciendo es un destructuring y operador spread para el resto
-  const { password, google, correo, ...resto } = req.body;
+  const { _id, password, google, correo, ...resto } = req.body;
 
   // TODO validar contra BD
   if (password) {

@@ -1,4 +1,5 @@
 const { request, response } = require("express");
+const bcryptjs = require("bcryptjs");
 
 const Usuario = require("../models/usuario");
 
@@ -15,25 +16,39 @@ const usuariosGet = (req = request, res = response) => {
 const usuariosPost = async (req = request, res = response) => {
   // Gracias al middleware express.json que procesa todo el body como un json
   // puedo desestructrar la data que viene en el body
-  const body = req.body;
-  const usuario = new Usuario(body);
-
+  const { nombre, correo, password, rol } = req.body;
+  const usuario = new Usuario({ nombre, correo, password, rol });
+  // Encripto el password
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
+  // Guardo en la BD
   await usuario.save();
-
+  // Devuelvo el usuario creado
   res.json({
     msg: "post API Usuarios",
     usuario,
   });
 };
 
-const usuariosPut = (req = request, res = response) => {
+const usuariosPut = async (req = request, res = response) => {
   // si necesito un Parametro por segmento es decir algo asi localhost:8080/api/usuarios/103434
   // le tengo que poner en el router "/:id" por ejemplo y luego en la funciona del controlador
   const { id } = req.params;
-  console.log(id);
+  // En la linea de abajo lo que estoy haciendo es un destructuring y operador spread para el resto
+  const { password, google, correo, ...resto } = req.body;
+
+  // TODO validar contra BD
+  if (password) {
+    // Encripto el password
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+
+  const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true });
 
   res.json({
     msg: "put API Usuarios",
+    usuario,
   });
 };
 

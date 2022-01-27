@@ -12,7 +12,6 @@ class Server {
     // Conexion a la BD (mongodb atlas o local)
     this.conectarDb();
 
-
     // Middlewares
     this.middlewares();
 

@@ -7,7 +7,9 @@ class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
+    
     this.usuarioPath = "/api/usuarios";
+    this.authPath = "/api/auth";
 
     // Conexion a la BD (mongodb atlas o local)
     this.conectarDb();
@@ -35,6 +37,7 @@ class Server {
   }
 
   routes() {
+    this.app.use(this.authPath, require("../routes/auth"));
     this.app.use(this.usuarioPath, require("../routes/usuarios"));
   }
 
